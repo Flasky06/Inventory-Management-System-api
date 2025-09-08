@@ -20,6 +20,6 @@ public class EmployeeDto {
     private String phoneNo;
     private LocalDate dob;
     private Gender gender;
-    private UUID shopId; // <- This field must be present
+    private UUID shopId;
     private String shopName;
 }

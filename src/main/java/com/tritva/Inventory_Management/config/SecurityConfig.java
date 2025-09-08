@@ -27,9 +27,6 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
 
-    // Remove the JwtAuthenticationFilter from the constructor
-    // private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,14 +45,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/ceo/**").hasRole("CEO")
-                        .requestMatchers("/api/workshop-manager/**").hasRole("WORKSHOP_MANAGER")
-                        .requestMatchers("/api/shop-manager/**").hasRole("SHOP_MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/inventory/**").hasAnyRole("ADMIN", "CEO", "WORKSHOP_MANAGER", "SHOP_MANAGER", "EMPLOYEE")
+
+                        // All other requests require authentication
+                        // Authorization handled by @PreAuthorize annotations
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
