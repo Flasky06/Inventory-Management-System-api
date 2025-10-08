@@ -13,44 +13,36 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "shop_inventory")
+@Table(name = "shop_inventory",
+        uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"shop_id", "product_id"})
+})
 public class ShopInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
-    private Integer pendingQuantity = 0; // Tracks items in transit
+    private int quantity;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "inventory_status", nullable = false)
+    private InventoryStatus inventoryStatus;
+
     @Column(nullable = false)
-    private InventoryStatus status = InventoryStatus.ACTIVE;
-
-    @Column(nullable = false, name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime lastUpdated;
 
     @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        this.lastUpdated = LocalDateTime.now();
     }
 }

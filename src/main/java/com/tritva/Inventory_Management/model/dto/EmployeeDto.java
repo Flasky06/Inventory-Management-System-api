@@ -3,6 +3,7 @@ package com.tritva.Inventory_Management.model.dto;
 import com.tritva.Inventory_Management.model.Gender;
 import com.tritva.Inventory_Management.model.Role;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EmployeeDto {
     private UUID id;
     private Role role;

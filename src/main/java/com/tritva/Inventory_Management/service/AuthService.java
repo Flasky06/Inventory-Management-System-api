@@ -15,6 +15,4 @@ public interface AuthService {
     void updateUser(UUID userId, UserUpdateDto userUpdateDto);
 
     void deleteUser(UUID userId);
-
-    void patchUser(UUID userId, UserUpdateDto userUpdateDto);
 }

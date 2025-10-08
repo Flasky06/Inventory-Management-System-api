@@ -1,22 +1,17 @@
 package com.tritva.Inventory_Management.model.dto;
 
-import com.tritva.Inventory_Management.model.InventoryStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ShopInventoryDto {
+public class DispatchItemResponse {
     private UUID id;
-    private UUID shopId;
     private UUID productId;
+    private String productName;
     private Integer quantity;
-    private LocalDateTime lastUpdated;
 }

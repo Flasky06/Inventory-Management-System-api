@@ -28,6 +28,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id", nullable = true)
+    private Shop shop;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

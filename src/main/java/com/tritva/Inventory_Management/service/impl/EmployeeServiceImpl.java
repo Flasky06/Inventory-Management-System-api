@@ -2,7 +2,6 @@ package com.tritva.Inventory_Management.service.impl;
 
 import com.tritva.Inventory_Management.mapper.EmployeeMapper;
 import com.tritva.Inventory_Management.model.dto.EmployeeDto;
-import com.tritva.Inventory_Management.model.dto.ShopDto;
 import com.tritva.Inventory_Management.model.entity.Employee;
 import com.tritva.Inventory_Management.model.entity.Shop;
 import com.tritva.Inventory_Management.repository.EmployeeRepository;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +35,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee savedEmployee = employeeRepository.save(employee);
         return employeeMapper.toDto(savedEmployee);
     }
-
-
-
 
     @Override
     public List<EmployeeDto> listEmployees() {

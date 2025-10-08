@@ -6,6 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring",
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ShopInventoryMapper {
@@ -17,4 +19,6 @@ public interface ShopInventoryMapper {
     @Mapping(source = "shopId", target = "shop.id")
     @Mapping(source = "productId", target = "product.id")
     ShopInventory toEntity(ShopInventoryDto shopInventoryDto);
+
+    List<ShopInventoryDto> toDtoList(List<ShopInventory> shopInventoryList);
 }

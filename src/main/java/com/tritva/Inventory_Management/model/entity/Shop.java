@@ -1,6 +1,7 @@
 package com.tritva.Inventory_Management.model.entity;
 
 import com.tritva.Inventory_Management.model.Role;
+import com.tritva.Inventory_Management.model.ShopType;
 import jakarta.persistence.*;
 import lombok.Getter; // Import the Getter annotation
 import lombok.Setter; // Import the Setter annotation
@@ -29,6 +30,10 @@ public class Shop {
 
     @Column(nullable = false)
     private String location;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ShopType shopType;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<Employee> employees;

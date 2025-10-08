@@ -7,9 +7,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,17 +28,44 @@ public class AuthController {
         try {
             AuthResponseDto response = authService.login(loginDto);
             return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Invalid username or password");
+            error.put("status", "UNAUTHORIZED");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            error.put("status", "BAD_REQUEST");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponseDto(null, null, null, null, "Invalid credentials"));
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "An unexpected error occurred");
+            error.put("status", "INTERNAL_SERVER_ERROR");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto) {
-        authService.register(registerDto);
-        return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto registerDto) {
+        try {
+            authService.register(registerDto);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User registered successfully");
+            response.put("username", registerDto.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            error.put("status", "BAD_REQUEST");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Failed to register user");
+            error.put("status", "INTERNAL_SERVER_ERROR");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
@@ -47,24 +77,47 @@ public class AuthController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @PutMapping("/users/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable UUID id,
-                                             @Valid @RequestBody UserUpdateDto userUpdateDto) {
-        authService.updateUser(id, userUpdateDto);
-        return ResponseEntity.ok("User updated successfully");
+    public ResponseEntity<?> updateUser(@PathVariable UUID id,
+                                        @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        try {
+            authService.updateUser(id, userUpdateDto);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User updated successfully");
+            response.put("userId", id.toString());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            error.put("status", "NOT_FOUND");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Failed to update user");
+            error.put("status", "INTERNAL_SERVER_ERROR");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
-        authService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'CEO')")
-    @PatchMapping("/users/{userId}")
-    public ResponseEntity<String> patchUser(@PathVariable UUID userId, @RequestBody UserUpdateDto userUpdateDto) {
-        authService.patchUser(userId, userUpdateDto);
-        return new ResponseEntity<>("User patched successfully", HttpStatus.OK);
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        try {
+            authService.deleteUser(id);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User deleted successfully");
+            response.put("userId", id.toString());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            error.put("status", "NOT_FOUND");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Failed to delete user");
+            error.put("status", "INTERNAL_SERVER_ERROR");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     @GetMapping("/test")
